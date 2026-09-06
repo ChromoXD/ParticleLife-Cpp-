@@ -11,16 +11,4 @@ std::unordered_map<std::string, const char *> Location = {
     {"Vertex_Shader", "Shaders/Vert.glsl"},
     {"Compute_Shader", "Shaders/Comp.glsl"}};
 
-int width{800}, height{600};
-
-float Triangle[] = {
-    -1.0f,  1.0f, 0.0f,   0.0f, 0.0f,
-    -1.0f, -1.0f, 0.0f,   0.0f, 1.0f,
-     1.0f, -1.0f, 0.0f,   1.0f, 1.0f,
-     1.0f,  1.0f, 0.0f,   1.0f, 0.0f
-};
-
-unsigned int Indeces [] = {
-    0, 1, 2,
-    0, 2, 3
-};
+int width{800}, height{800};
