@@ -16,6 +16,8 @@ int main()
     const char *Title{"Simulation"};
     const char *fragShader{LoadFileText(Location["Fragment_Shader"])};
     const char *compShader{LoadFileText(Location["Compute_Shader" ])};
+    unsigned int CompShad;
+    unsigned int CompProg;
 
     SetConfigFlags(FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(width, height, Title);
@@ -36,12 +38,15 @@ int main()
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, Particles);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-
-
+    CreateComputeShader(&CompShad, &compShader, &CompProg);
 
     while (!WindowShouldClose())
     {
         game.UpdateTime();
+
+        glUseProgram(CompProg);
+        glDispatchCompute(width, height, 1);
+        glMemoryBarrier(GL_ALL_BARRIER_BITS);
     
         BeginTextureMode(RT2);
             ClearBackground((Color){ 15, 14, 18, 255 });
@@ -65,4 +70,14 @@ int main()
     CloseWindow();
 
     return 0;
+}
+
+void CreateComputeShader(unsigned int* CS, const char * _CS_Loc[], unsigned int* CP){
+    *CS = glCreateShader(GL_COMPUTE_SHADER);
+    glShaderSource(*CS, 1, _CS_Loc, NULL);
+    glCompileShader(*CS);
+
+    *CP = glCreateProgram();
+    glAttachShader(*CP, *CS);
+    glLinkProgram(*CP);
 }

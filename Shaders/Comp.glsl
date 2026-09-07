@@ -1,26 +1,33 @@
 #version 430 core
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 10) in;
 
-layout(set = 0, binding = 0) uniform Config{
-    mat4 transform;
-    int matrixCount;
-} opData;
-
-layout(set = 0, binding = 1) readonly buffer  InputBuffer{
-    mat4 matrices[];
-} sourceData;
-
-layout(set = 0, binding = 2) buffer  OutputBuffer{
-    mat4 matrices[];
-} outputData;
+layout(std430, binding = 3) buffer particles
+{
+    float Particle_Array[];
+};
 
 void main(){
-    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
-    imageStore(img, pixel, vec4(1.0, 0.0, 0.0, 1.0));
+
+    uint i = gl_LocalInvocationID.x;
+
+    float x = Particle_Array[i*2];
+    float y = Particle_Array[i*2+1];
+
+    for(int o = 0; o < 10; o++){
+        float dx = Particle_Array[(i+1)*2]-x;
+        float dy = Particle_Array[(i+1)*2+1]-y;
+
+        float r_dist = dx*dx + dy*dy;
+
+        if(0 != i){
+            Particle_Array[i*2] += Force(1.0, )
+        }
+    }
+
 }
 
-float Force(float particle1, float particle2, float a, float r) {
+float Force(float a, float r) {
     const float beta = 0.3;
 
     float nr = r / 100.0;
