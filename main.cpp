@@ -9,49 +9,31 @@
 
 #define GLSL_Version 430
 
+void CreateComputeShader();
+void Start();
+void Update();
+
 Game game(60, 10);
 
 int main()
 {
-    const char *Title{"Simulation"};
-    const char *fragShader{LoadFileText(Location["Fragment_Shader"])};
-    const char *compShader{LoadFileText(Location["Compute_Shader" ])};
-    unsigned int CompShad;
-    unsigned int CompProg;
-
     SetConfigFlags(FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(width, height, Title);
+    
+    CreateComputeShader();
 
-    Shader shader = LoadShader(0, TextFormat(Location["Fragment_Shader"], GLSL_Version));
-
-    RenderTexture2D RT2 = LoadRenderTexture(width, height);
-
-    GLuint Particles;
-    glGenBuffers(1, &Particles);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, Particles);
-    glBufferData(
-        GL_SHADER_STORAGE_BUFFER,
-        game.ParticlePos.size() * sizeof(game.ParticlePos[0]),
-        game.ParticlePos.data(),
-        GL_DYNAMIC_DRAW
-    );
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, Particles);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-    CreateComputeShader(&CompShad, &compShader, &CompProg);
+    Start();
 
     while (!WindowShouldClose())
     {
         game.UpdateTime();
-
-        glUseProgram(CompProg);
-        glDispatchCompute(width, height, 1);
-        glMemoryBarrier(GL_ALL_BARRIER_BITS);
+        
+        Update();
     
         BeginTextureMode(RT2);
             ClearBackground((Color){ 15, 14, 18, 255 });
             DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
-            EndTextureMode();
+        EndTextureMode();
             
             
         BeginDrawing();
@@ -62,6 +44,9 @@ int main()
             EndShaderMode();
 
         EndDrawing();
+
+        std::swap(Current_Particles, Next_Particles);
+        
     }
 
     UnloadFileText((char *)fragShader);
@@ -72,12 +57,53 @@ int main()
     return 0;
 }
 
-void CreateComputeShader(unsigned int* CS, const char * _CS_Loc[], unsigned int* CP){
-    *CS = glCreateShader(GL_COMPUTE_SHADER);
-    glShaderSource(*CS, 1, _CS_Loc, NULL);
-    glCompileShader(*CS);
+void CreateComputeShader(){
+    CompShad = glCreateShader(GL_COMPUTE_SHADER);
+    glShaderSource(CompShad, 1, &compShader, NULL);
+    glCompileShader(CompShad);
 
-    *CP = glCreateProgram();
-    glAttachShader(*CP, *CS);
-    glLinkProgram(*CP);
+    CompProg = glCreateProgram();
+    glAttachShader(CompProg, CompShad);
+    glLinkProgram(CompProg);
+}
+
+void Start(){
+    shader = LoadShader(0, TextFormat(Location["Fragment_Shader"], GLSL_Version));
+    RT2 = LoadRenderTexture(width, height);
+
+    glGenBuffers(1, &Current_Particles);
+    glGenBuffers(1, &Next_Particles);
+}
+
+void Update(){
+    // Uploading Current Particle position to compute shader
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, Current_Particles);
+    glBufferData(
+        GL_SHADER_STORAGE_BUFFER,
+        game.ParticlePos.size() * sizeof(game.ParticlePos[0]),
+        game.ParticlePos.data(),
+        GL_DYNAMIC_DRAW
+    );
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, Current_Particles);
+    
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, Next_Particles);
+    // glBufferData(
+    //     GL_SHADER_STORAGE_BUFFER,
+    //     game.Next_ParticlePos.size() * sizeof(game.Next_ParticlePos[0]),
+    //     game.Next_ParticlePos.data(),
+    //     GL_DYNAMIC_DRAW
+    // );
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, Next_Particles);
+    
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    // Running compute shader
+    glUseProgram(CompProg);
+    glDispatchCompute(1, 1, 1);
+    glMemoryBarrier(GL_ALL_BARRIER_BITS);
+
+    //Uploading Next Particle position to Fragment shader
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, Next_Particles);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, Next_Particles);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }

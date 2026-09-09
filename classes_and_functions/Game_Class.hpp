@@ -18,11 +18,13 @@ class Game{
             this->FPS = FPS;
             this->NOP = NOP*2;
             ParticlePos.resize(this->NOP);
+            Next_ParticlePos.resize(this->NOP);
 
             InitParticle();
         }
         
         std::vector<float> ParticlePos;
+        std::vector<float> Next_ParticlePos;
     
         void UpdateTime();
         void InitParticle();

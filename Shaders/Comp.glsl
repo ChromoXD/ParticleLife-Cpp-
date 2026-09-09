@@ -2,30 +2,15 @@
 
 layout(local_size_x = 10) in;
 
-layout(std430, binding = 3) buffer particles
+layout(std430, binding = 2) buffer particles
 {
     float Particle_Array[];
 };
 
-void main(){
-
-    uint i = gl_LocalInvocationID.x;
-
-    float x = Particle_Array[i*2];
-    float y = Particle_Array[i*2+1];
-
-    for(int o = 0; o < 10; o++){
-        float dx = Particle_Array[(i+1)*2]-x;
-        float dy = Particle_Array[(i+1)*2+1]-y;
-
-        float r_dist = dx*dx + dy*dy;
-
-        if(0 != i){
-            Particle_Array[i*2] += Force(1.0, )
-        }
-    }
-
-}
+layout(std430, binding = 4) buffer particles
+{
+    float next_Particle_Array[];
+};
 
 float Force(float a, float r) {
     const float beta = 0.3;
@@ -39,4 +24,28 @@ float Force(float a, float r) {
     } else {
         return 0.0;
     }
+}
+
+void main(){
+
+    uint i = gl_LocalInvocationID.x;
+
+    next_Particle_Array[i * 2] =
+        Particle_Array[i * 2] - 0.001;
+
+    next_Particle_Array[i * 2 + 1] =
+        Particle_Array[i * 2 + 1] - 0.001;
+
+    //for(int o = 0; o < 10; o++){
+    //    if(o != i && o != 9){
+    //        float r_dist = sqrt(dx*dx + dy*dy);
+    //        float dx = Particle_Array[o*2] - Particle_Array[i*2];
+    //        float dy = Particle_Array[o*2+1] - Particle_Array[i*2+1];
+    //        
+    //        float inv_tan = atan(dx, dy);
+    //
+    //        next_Particle_Array[i*2] += cos(inv_tan) * Force(1, r_dist);
+    //        next_Particle_Array[i*2+1] += sin(inv_tan) * Force(1, r_dist);
+    //    }
+    //}
 }
