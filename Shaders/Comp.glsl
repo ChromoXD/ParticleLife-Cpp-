@@ -30,11 +30,15 @@ void main(){
 
     uint i = gl_LocalInvocationID.x;
 
-    next_Particle_Array[i * 2] =
-        Particle_Array[i * 2] - 0.001;
+    next_Particle_Array[i * 2] = 0.5;
 
-    next_Particle_Array[i * 2 + 1] =
-        Particle_Array[i * 2 + 1] - 0.001;
+    next_Particle_Array[i * 2 + 1] = 0.5;
+
+    //next_Particle_Array[i * 2] =
+    //    Particle_Array[i * 2] - 0.001;
+    //
+    //next_Particle_Array[i * 2 + 1] =
+    //    Particle_Array[i * 2 + 1] - 0.001;
 
     //for(int o = 0; o < 10; o++){
     //    if(o != i && o != 9){

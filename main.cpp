@@ -23,11 +23,31 @@ int main()
     CreateComputeShader();
 
     Start();
+    
+        // Uploading Current Particle position to compute shader
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, Current_Particles);
+        glBufferData(
+            GL_SHADER_STORAGE_BUFFER,
+            game.ParticlePos.size() * sizeof(game.ParticlePos[0]),
+            game.ParticlePos.data(),
+            GL_DYNAMIC_DRAW
+        );
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, Current_Particles);
+        
+        
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, Next_Particles);
+        glBufferData(
+            GL_SHADER_STORAGE_BUFFER,
+            game.Next_ParticlePos.size() * sizeof(game.Next_ParticlePos[0]),
+            game.Next_ParticlePos.data(),
+            GL_DYNAMIC_DRAW
+        );
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, Next_Particles);
 
     while (!WindowShouldClose())
     {
         game.UpdateTime();
-        
+
         Update();
     
         BeginTextureMode(RT2);
@@ -76,34 +96,22 @@ void Start(){
 }
 
 void Update(){
-    // Uploading Current Particle position to compute shader
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, Current_Particles);
-    glBufferData(
-        GL_SHADER_STORAGE_BUFFER,
-        game.ParticlePos.size() * sizeof(game.ParticlePos[0]),
-        game.ParticlePos.data(),
-        GL_DYNAMIC_DRAW
-    );
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, Current_Particles);
-    
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, Next_Particles);
+    // Running compute shader
+    glUseProgram(CompProg);
+    glDispatchCompute(1, 1, 1);
+    glMemoryBarrier(GL_ALL_BARRIER_BITS);
+
+    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, Next_Particles);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, Next_Particles);
+
+    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, Next_Particles);
     // glBufferData(
     //     GL_SHADER_STORAGE_BUFFER,
     //     game.Next_ParticlePos.size() * sizeof(game.Next_ParticlePos[0]),
     //     game.Next_ParticlePos.data(),
     //     GL_DYNAMIC_DRAW
     // );
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, Next_Particles);
-    
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-    // Running compute shader
-    glUseProgram(CompProg);
-    glDispatchCompute(1, 1, 1);
-    glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
     //Uploading Next Particle position to Fragment shader
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, Next_Particles);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, Next_Particles);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
