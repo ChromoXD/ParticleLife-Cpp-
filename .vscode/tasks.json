@@ -10,6 +10,7 @@
                 "${file}",
                 "${fileDirname}\\classes_and_functions\\Shader_Function.cpp",
                 "${fileDirname}\\classes_and_functions\\Game_Class.cpp",
+                "${fileDirname}\\classes_and_functions\\StartAndUpdate.cpp",
 
                 "-I", "C:/raylib/raylib/src",
                 "-I", "${fileDirname}",

@@ -1,7 +1,5 @@
 #pragma once
-#include <array>
 #include <vector>
-#include <raylib.h>
 
 
 class Game{
@@ -12,11 +10,12 @@ class Game{
 
     public:
         int NOP;
+        int ANOP;
 
         Game(int FPS, int NOP){
-            SetTargetFPS(FPS);
             this->FPS = FPS;
             this->NOP = NOP*2;
+            this->ANOP = NOP;
             ParticlePos.resize(this->NOP);
             Next_ParticlePos.resize(this->NOP);
 

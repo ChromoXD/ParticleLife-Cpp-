@@ -1,24 +1,21 @@
 #version 430 core
 
-layout(local_size_x = 10) in;
+layout(local_size_x = 64) in;
 
-layout(std430, binding = 2) buffer particles
+layout(std430, binding = 3) buffer particles
 {
     float Particle_Array[];
 };
 
-layout(std430, binding = 4) buffer particles
-{
-    float next_Particle_Array[];
-};
+uniform int NumberOfParticles;
 
 float Force(float a, float r) {
     const float beta = 0.3;
 
-    float nr = r / 100.0;
+    float nr = r/100;
 
     if (nr < beta) {
-        return nr / beta - 1.0;
+        return nr / beta - 1;
     } else if (beta < nr && nr < 1.0) {
         return a * (1.0 - abs(2.0 * nr - 1.0 - beta) / (1.0 - beta));
     } else {
@@ -27,29 +24,28 @@ float Force(float a, float r) {
 }
 
 void main(){
-
     uint i = gl_LocalInvocationID.x;
 
-    next_Particle_Array[i * 2] = 0.5;
+    float forceX = 0;
+    float forceY = 0;
+    float Scaling_Factor = 500;
 
-    next_Particle_Array[i * 2 + 1] = 0.5;
+    for(int o = 0; o < NumberOfParticles; o++){
+        if(o == i) continue;
 
-    //next_Particle_Array[i * 2] =
-    //    Particle_Array[i * 2] - 0.001;
-    //
-    //next_Particle_Array[i * 2 + 1] =
-    //    Particle_Array[i * 2 + 1] - 0.001;
+        float x = (Particle_Array[o*2] - Particle_Array[i*2]) * Scaling_Factor;
+        float y = (Particle_Array[o*2 + 1] - Particle_Array[i*2 + 1]) * Scaling_Factor;
+        
 
-    //for(int o = 0; o < 10; o++){
-    //    if(o != i && o != 9){
-    //        float r_dist = sqrt(dx*dx + dy*dy);
-    //        float dx = Particle_Array[o*2] - Particle_Array[i*2];
-    //        float dy = Particle_Array[o*2+1] - Particle_Array[i*2+1];
-    //        
-    //        float inv_tan = atan(dx, dy);
-    //
-    //        next_Particle_Array[i*2] += cos(inv_tan) * Force(1, r_dist);
-    //        next_Particle_Array[i*2+1] += sin(inv_tan) * Force(1, r_dist);
-    //    }
-    //}
+        float r = sqrt(x*x + y*y);
+        //float forces = Force(-1.0, r);
+        float forces = 0.001;
+
+        forceX += forces * x / r;
+        forceY += forces * y / r;
+    }
+
+    Particle_Array[i * 2] += forceX;
+    Particle_Array[i * 2 + 1] += forceY;
+
 }

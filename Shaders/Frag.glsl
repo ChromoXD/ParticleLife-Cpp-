@@ -8,6 +8,8 @@ layout(std430, binding = 3) buffer particles
     float Particle_Array[];
 };
 
+uniform int NumberOfParticles;
+
 out vec4 FragColor;
 
 float radius = 0.01;
@@ -15,7 +17,7 @@ float radius = 0.01;
 void main(){
     FragColor = vec4(0.059, 0.055, 0.071, 1.0);
 
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < NumberOfParticles; i++){
         float x = fragTexCoord.x - Particle_Array[i*2];
         float y = fragTexCoord.y - Particle_Array[i*2+1];
 
