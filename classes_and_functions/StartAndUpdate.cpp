@@ -1,8 +1,16 @@
 #include <raylib.h>
 #include <glad.h>
 
-#include "Game_Class.hpp"
-#include "Shader_Function.hpp"
+#include "StartAndUpdate.hpp"
+// #include "Shader_Function.hpp"
+
+const char *fragShader{LoadFileText("Shaders/Frag.glsl")};
+const char *compShader{LoadFileText("Shaders/Comp.glsl")};
+unsigned int CompShad;
+unsigned int CompProg;
+
+Shader shader;
+RenderTexture2D RT2;
 
 #define GLSL_Version 430
 
@@ -22,7 +30,7 @@ void Start(Game *game, GLuint *Current_Particles){
 
     CreateComputeShader();
 
-    shader = LoadShader(0, TextFormat(Location["Fragment_Shader"], GLSL_Version));
+    shader = LoadShader(0, TextFormat("Shaders/Frag.glsl", GLSL_Version));
     RT2 = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
     glGenBuffers(1, Current_Particles);

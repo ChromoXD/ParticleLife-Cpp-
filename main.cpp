@@ -1,10 +1,9 @@
 #include <raylib.h>
 
 #include "main.hpp"
-#include "classes_and_functions/Game_Class.hpp"
 #include "classes_and_functions/StartAndUpdate.hpp"
 
-Game game(60, 40);
+Game game(60, 10);
 
 int main()
 {

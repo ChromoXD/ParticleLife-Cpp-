@@ -1,6 +1,11 @@
-#include "Game_Class.hpp"
+#pragma once
 
-void Start(Game *game, GLuint *Current_Particles);
-void Update(Game *game, GLuint *Current_Particles);
-void Renderer();
-void UnloadShader();
+#include "Game_Class.hpp"
+#include <raylib.h>
+
+extern void Start(Game *game, GLuint *Current_Particles);
+extern void Update(Game *game, GLuint *Current_Particles);
+extern void Renderer();
+extern void UnloadShader();
+
+
