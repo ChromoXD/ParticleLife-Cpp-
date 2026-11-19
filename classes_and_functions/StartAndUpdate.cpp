@@ -34,21 +34,32 @@ void Start(Game *game, GLuint *Current_Particles){
     RT2 = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
     glGenBuffers(1, Current_Particles);
+    glGenBuffers(1, Current_Particles+1);
         
     int SNOP_frag = GetShaderLocation(shader, "NumberOfParticles");
-    SetShaderValue(shader, SNOP_frag, &game->NOP, SHADER_UNIFORM_INT);
+    SetShaderValue(shader, SNOP_frag, &game->ANOP, SHADER_UNIFORM_INT);
     
     glUseProgram(CompProg);
     int SNOP_comp = glGetUniformLocation(CompProg, "NumberOfParticles");
-    glUniform1i(SNOP_comp, game->NOP);
+    glUniform1i(SNOP_comp, game->ANOP);
     glUseProgram(0);
 
+
     
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, *Current_Particles);
+    
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, *Current_Particles);
     glBufferData(
         GL_SHADER_STORAGE_BUFFER,
-        game->ParticlePos.size() * sizeof(game->ParticlePos[0]),
-        game->ParticlePos.data(),
+        game->ParticlePos[0].size() * sizeof(game->ParticlePos[0][0]),
+        game->ParticlePos[0].data(),
+        GL_DYNAMIC_DRAW
+    );
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, *(Current_Particles+1));
+    glBufferData(
+        GL_SHADER_STORAGE_BUFFER,
+        game->ParticlePos[1].size() * sizeof(game->ParticlePos[1][0]),
+        game->ParticlePos[1].data(),
         GL_DYNAMIC_DRAW
     );
 
@@ -61,32 +72,23 @@ void Update(Game *game, GLuint *Current_Particles){
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, *Current_Particles);
+    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, *Current_Particles);
 
-    GLsizeiptr BufferSize = sizeof(game->ParticlePos[0]) * game->ParticlePos.size(); 
-    float* BufferDataMap = (float*)glMapBufferRange(
-        GL_SHADER_STORAGE_BUFFER,
-        0,
-        BufferSize,
-        GL_MAP_READ_BIT
-    );
+    // GLsizeiptr BufferSize = sizeof(game->ParticlePos[0]) * game->ParticlePos.size(); 
+    // float* BufferDataMap = (float*)glMapBufferRange(
+    //     GL_SHADER_STORAGE_BUFFER,
+    //     0,
+    //     BufferSize,
+    //     GL_MAP_READ_BIT
+    // );
 
-    if (BufferDataMap)
-    {
-        std::copy(BufferDataMap, BufferDataMap + game->ParticlePos.size(), game->ParticlePos.begin());
-        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-    }
+    // if (BufferDataMap)
+    // {
+    //     std::copy(BufferDataMap, BufferDataMap + game->ParticlePos.size(), game->ParticlePos.begin());
+    //     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+    // }
+    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, *Current_Particles);
     
-
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, *Current_Particles);
-    glBufferData(
-        GL_SHADER_STORAGE_BUFFER,
-        game->ParticlePos.size() * sizeof(game->ParticlePos[0]),
-        game->ParticlePos.data(),
-        GL_DYNAMIC_DRAW
-    );
-
-
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 

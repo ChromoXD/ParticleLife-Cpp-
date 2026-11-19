@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-
+#include <array>
+#include <cmath>
 
 class Game{
     private:
@@ -16,13 +17,15 @@ class Game{
             this->FPS = FPS;
             this->NOP = NOP*2;
             this->ANOP = NOP;
-            ParticlePos.resize(this->NOP);
+
+            ParticlePos[0].resize(std::ceil(this->NOP/2));
+            ParticlePos[1].resize(std::floor(this->NOP/2));
             Next_ParticlePos.resize(this->NOP);
 
             InitParticle();
         }
         
-        std::vector<float> ParticlePos;
+        std::array<std::vector<float>, 2> ParticlePos;
         std::vector<float> Next_ParticlePos;
     
         void UpdateTime();
