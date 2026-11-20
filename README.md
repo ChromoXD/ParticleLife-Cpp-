@@ -6,6 +6,7 @@ It's a simulation of how forces interact with each other to simulate life-like b
 ## Tech-Stack
  - Cpp
  - Shaders(Fragment and Compute)
+I tried to use a compute shader for parallel calculations to increase performance, but because of its small scale (for now), there isn't much performance gain visible
 
 ## Future Plans
  - Optimising the interaction of forces with Spatial-Hashing
