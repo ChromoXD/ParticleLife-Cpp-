@@ -14,3 +14,5 @@ It's a simulation of how forces interact with each other to simulate life-like b
 
 ---
 
+
+<img src="https://raw.githubusercontent.com/ChromoXD/ParticleLife-Cpp-/refs/heads/main/assets/Short-Clip.gif" width="100%">
