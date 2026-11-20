@@ -10,14 +10,11 @@ int main()
     SetConfigFlags(FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(width, height, Title);
 
-    Start(&game, Current_Particles);
+    Start(&game, &Current_Particles);
     
     while (!WindowShouldClose())
     {
-        game.UpdateTime();
-
-        Update(&game, Current_Particles);
-    
+        Update(&game);
         Renderer();
     }
 

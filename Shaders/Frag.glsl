@@ -9,11 +9,6 @@ layout(std430, binding = 3) buffer particlesA
     float Particle_Array[];
 };
 
-layout(std430, binding = 2) buffer particlesB
-{
-    float Particle_Array_two[];
-};
-
 uniform int NumberOfParticles;
 
 out vec4 FragColor;
@@ -27,18 +22,14 @@ void main(){
         float x = 0;
         float y = 0;
 
-        if(i <= NumberOfParticles/2){
-            x = fragTexCoord.x - Particle_Array[i*2];
-            y = fragTexCoord.y - Particle_Array[i*2+1];
-        }else{
-            x = fragTexCoord.x - Particle_Array_two[(i  - NumberOfParticles/2)*2];
-            y = fragTexCoord.y - Particle_Array_two[(i - NumberOfParticles/2)*2+1];
-        }
+        x = fragTexCoord.x - Particle_Array[i*2];
+        y = fragTexCoord.y - Particle_Array[i*2+1];
 
-        if((x*x + y*y < radius*radius) && i <= NumberOfParticles/2){
+        if((x*x + y*y < radius*radius) && i < NumberOfParticles/2){
             FragColor = vec4(0.369, 0.659, 0.902, 1.0);
             break;
-        }else if((x*x + y*y < radius*radius) && i > NumberOfParticles/2){
+        }
+        if((x*x + y*y < radius*radius) && i > NumberOfParticles/2){
             FragColor = vec4(1.0, 0.53, 0.58, 1.0);
             break;
         }

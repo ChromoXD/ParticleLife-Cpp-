@@ -7,10 +7,6 @@ layout(std430, binding = 3) buffer particlesA
     float Particle_Array[];
 };
 
-layout(std430, binding = 2) buffer particlesB
-{
-    float Particle_Array_two[];
-};
 
 uniform int NumberOfParticles;
 
@@ -30,49 +26,54 @@ float Force(float a, float r) {
 
 void main(){
     uint i = gl_GlobalInvocationID.x;
-    uint count = uint(NumberOfParticles) / 2u;   
+    uint count = uint(NumberOfParticles) / 2u;
 
     float forceX = 0.0;
     float forceY = 0.0;
     float Scaling_Factor = 500.0;
 
-    
-
-    for(uint o = 0u; o < count; o++){
+    for(uint o = 0u; o < NumberOfParticles; o++){
         if(o == i) continue;
         
         float x = 0.0;
         float y = 0.0;
         float forces = 0.0;
 
-        if(i < NumberOfParticles/2){
-            x = (Particle_Array[o*2] - Particle_Array[i*2]) * Scaling_Factor;
-            y = (Particle_Array[o*2 + 1] - Particle_Array[i*2 + 1]) * Scaling_Factor;
-        }else{
-            x = (Particle_Array_two[o*2 - NumberOfParticles/2] - Particle_Array_two[(i - NumberOfParticles/2)*2]) * Scaling_Factor;
-            y = (Particle_Array_two[(o*2 - NumberOfParticles/2) + 1] - Particle_Array_two[(i - NumberOfParticles/2)*2 + 1]) * Scaling_Factor;
-        }
+        x = (Particle_Array[o*2] - Particle_Array[i*2]) * Scaling_Factor;
+        y = (Particle_Array[o*2 + 1] - Particle_Array[i*2 + 1]) * Scaling_Factor;
 
         float r = sqrt(x*x + y*y);
         if (r < 1e-6) continue;
 
-        if(i < NumberOfParticles/2){
+        // Blue - Blue
+        if(i < NumberOfParticles/2 && o < NumberOfParticles/2){
             forces = Force(1.0, r)/Scaling_Factor;
-        }else{
+        }
+        
+        // Blue - Red
+        if(i < NumberOfParticles/2 && o > NumberOfParticles/2){
             forces = Force(-1.0, r)/Scaling_Factor;
+        } 
+        
+        // Red - Blue
+        if(i > NumberOfParticles/2 && o < NumberOfParticles/2){
+            forces = Force(1.0, r)/Scaling_Factor;
+        }
+
+        // Red - Red
+        if(i > NumberOfParticles/2 && o > NumberOfParticles/2){
+            forces = 0.0;
         }
 
         forceX += forces * x / r;
         forceY += forces * y / r;
     }
 
+    if(Particle_Array[i*2] < 0.0) Particle_Array[i*2] += 1.0;
+    if(Particle_Array[i*2] > 1.0) Particle_Array[i*2] -= 1.0;
+    if(Particle_Array[i*2 + 1] < 0.0) Particle_Array[i*2 + 1] += 1.0;
+    if(Particle_Array[i*2 + 1] > 1.0) Particle_Array[i*2 + 1] -= 1.0;
     
-    if(i < NumberOfParticles/2){
-        Particle_Array[i * 2] += forceX;
-        Particle_Array[i * 2 + 1] += forceY;
-    }
-    else{
-        Particle_Array_two[(i - NumberOfParticles/2) * 2] += forceX;
-        Particle_Array_two[(i - NumberOfParticles/2) * 2 + 1] += forceY;
-    }
+    Particle_Array[i * 2] += forceX;
+    Particle_Array[i * 2 + 1] += forceY;
 }

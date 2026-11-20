@@ -2,16 +2,6 @@
 #include <glad.h>
 #include <iostream>
 
-GLuint ComputeShader,
-       ComputeProgram,
-       GraphicsProgram,
-       FragmentShader,
-       VertexShader;
-
-GLuint VBO,
-       VAO,
-       EBO;
-
 unsigned int CreateShader(const char *ShaderSource, int SHADER_TYPE, std::string type)
 {
     int success;
