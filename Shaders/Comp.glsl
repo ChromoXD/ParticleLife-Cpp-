@@ -26,6 +26,7 @@ float Force(float a, float r) {
 
 void main(){
     uint i = gl_GlobalInvocationID.x;
+    if (i >= uint(NumberOfParticles)) return;
     uint count = uint(NumberOfParticles) / 2u;
 
     float forceX = 0.0;
