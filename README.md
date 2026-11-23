@@ -1,6 +1,10 @@
 # Particle Life
 It's a simulation of how forces interact with each other to simulate life-like behaviour
 
+It uses a piecewise equation to calculate the resultant force,
+
+<center><img src="https://raw.githubusercontent.com/ChromoXD/ParticleLife-Cpp-/refs/heads/main/assets/Piece%20wise%20function.png" width="100%"></center>
+
 ---
 
 ## Tech-Stack
